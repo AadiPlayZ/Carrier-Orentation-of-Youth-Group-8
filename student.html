@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard | Mentor-Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#14213D',
+            secondary: '#FCA311',
+            accent: '#E5E5E5',
+            dark: '#000000',
+            light: '#FFFFFF',
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    .sidebar-collapsed {
+      width: 80px;
+      overflow: hidden;
+    }
+    .sidebar-collapsed .nav-text {
+      display: none;
+    }
+    .sidebar-collapsed .profile-name {
+      display: none;
+    }
+    .sidebar-collapsed .logo-text {
+      display: none;
+    }
+    .sidebar-collapsed .logo-icon {
+      margin-right: 0;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 50;
+        transition: transform 0.3s ease;
+      }
+      .sidebar-open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .mobile-menu-button {
+        display: block;
+      }
+    }
+    .notification-panel {
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .notification-panel-open {
+      transform: translateX(0);
+    }
+    .profile-panel {
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .profile-panel-open {
+      transform: translateX(0);
+    }
+    .learn-more-section {
+      display: none;
+    }
+    .learn-more-section-active {
+      display: block;
+    }
+    
+  </style>
+</head>
+
+<body class="flex bg-accent min-h-screen">
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-button fixed top-4 left-4 z-40 bg-primary text-secondary p-2 rounded-lg md:hidden">
+    <i class="fas fa-bars text-xl"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <aside class="sidebar w-64 h-screen bg-primary p-6 space-y-6 fixed transition-all duration-300 shadow-xl">
+    <div class="flex items-center mb-8">
+        <div class="animate-fade-in">
+            <img src="assets/logo mentor hub.png" alt="Mentor Hub Logo" class="w-40 hover:scale-105 transition-transform duration-300">
+          </div>
+    </div>
+
+    <div class="flex flex-col items-center space-y-4 pb-6 border-b border-accent/20">
+      <div class="w-20 h-20 bg-secondary rounded-full flex items-center justify-center text-primary text-2xl font-bold">
+        <span>JD</span>
+      </div>
+      <p class="profile-name font-semibold text-light">John Doe</p>
+      <p class="text-accent/80 text-sm">Student</p>
+    </div>
+
+    <nav class="space-y-2 text-sm">
+      <a href="#dashboard" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-home mr-3 text-secondary"></i>
+        <span class="nav-text">Dashboard</span>
+      </a>
+      <a href="#sessions" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-calendar-alt mr-3 text-secondary"></i>
+        <span class="nav-text">Upcoming Sessions</span>
+      </a>
+      <a href="#status" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-clipboard-list mr-3 text-secondary"></i>
+        <span class="nav-text">Appointment Status</span>
+      </a>
+      <a href="#webinars" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-video mr-3 text-secondary"></i>
+        <span class="nav-text">Upcoming Webinars</span>
+      </a>
+      <a href="#badges" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-award mr-3 text-secondary"></i>
+        <span class="nav-text">Badges</span>
+      </a>
+      <a href="#interview" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-robot mr-3 text-secondary"></i>
+        <span class="nav-text">AI Mock Interview</span>
+      </a>
+      <a href="#roadmaps" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-map-marked-alt mr-3 text-secondary"></i>
+        <span class="nav-text">AI Roadmaps</span>
+      </a>
+      <a href="#learn-more" class="flex items-center p-3 rounded-lg text-light hover:bg-secondary/20 hover:text-secondary transition-colors">
+        <i class="fas fa-info-circle mr-3 text-secondary"></i>
+        <span class="nav-text">Learn More</span>
+      </a>
+    </nav>
+
+    <div class="absolute bottom-6 left-6 right-6">
+      <button class="w-full bg-secondary text-dark font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">
+        <i class="fas fa-sign-out-alt mr-2"></i>
+        <span class="nav-text">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Notification Panel -->
+  <div class="notification-panel fixed top-0 right-0 w-80 h-full bg-white shadow-xl z-50 p-4 overflow-y-auto">
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+      <h3 class="font-bold text-lg text-primary">Notifications</h3>
+      <button id="close-notifications" class="text-gray-500 hover:text-primary">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <!-- Welcome Message for New User -->
+    <div class="bg-secondary/10 p-4 rounded-lg mb-4">
+      <div class="flex items-start">
+        <div class="bg-secondary text-white p-2 rounded-full mr-3">
+          <i class="fas fa-gift"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-primary">Welcome to MentorHub!</h4>
+          <p class="text-sm text-gray-600">We're excited to have you here. Complete your profile to get personalized mentor recommendations.</p>
+          <p class="text-xs text-secondary mt-1">Just now</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sample Notifications -->
+    <div class="p-3 border-b hover:bg-accent/30 cursor-pointer">
+      <div class="flex items-start">
+        <div class="bg-primary text-white p-2 rounded-full mr-3">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-primary">Session Booked</h4>
+          <p class="text-sm text-gray-600">Your session with Sarah Johnson is confirmed for tomorrow at 3:00 PM</p>
+          <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-3 border-b hover:bg-accent/30 cursor-pointer">
+      <div class="flex items-start">
+        <div class="bg-primary text-white p-2 rounded-full mr-3">
+          <i class="fas fa-users"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-primary">New Webinar Added</h4>
+          <p class="text-sm text-gray-600">"Advanced React Patterns" webinar is now available for enrollment</p>
+          <p class="text-xs text-gray-500 mt-1">1 day ago</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-3 border-b hover:bg-accent/30 cursor-pointer">
+      <div class="flex items-start">
+        <div class="bg-primary text-white p-2 rounded-full mr-3">
+          <i class="fas fa-award"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-primary">New Badge Earned</h4>
+          <p class="text-sm text-gray-600">You've earned the "Dedicated Learner" badge for completing 5 sessions</p>
+          <p class="text-xs text-gray-500 mt-1">3 days ago</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Panel -->
+  <div class="profile-panel fixed top-0 right-0 w-80 h-full bg-white shadow-xl z-50 p-4 overflow-y-auto">
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+      <h3 class="font-bold text-lg text-primary">My Profile</h3>
+      <button id="close-profile" class="text-gray-500 hover:text-primary">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="flex flex-col items-center mb-6">
+      <div class="w-24 h-24 bg-secondary rounded-full flex items-center justify-center text-primary text-3xl font-bold mb-3">
+        JD
+      </div>
+      <h2 class="text-xl font-bold text-primary">John Doe</h2>
+      <p class="text-gray-600">Student</p>
+      <p class="text-sm text-gray-500 mt-2">Member since June 2023</p>
+    </div>
+    
+    <div class="space-y-4">
+      <div class="bg-accent/30 p-4 rounded-lg">
+        <h4 class="font-bold text-primary mb-2">Personal Information</h4>
+        <div class="space-y-2">
+          <div>
+            <label class="text-xs text-gray-500">Email</label>
+            <p class="text-sm">john.doe@example.com</p>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500">Phone</label>
+            <p class="text-sm">+1 (555) 123-4567</p>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500">Location</label>
+            <p class="text-sm">New York, USA</p>
+          </div>
+        </div>
+        <button class="mt-3 text-sm text-secondary hover:text-yellow-600 font-medium">
+          <i class="fas fa-edit mr-1"></i> Edit Profile
+        </button>
+      </div>
+      
+      <div class="bg-accent/30 p-4 rounded-lg">
+        <h4 class="font-bold text-primary mb-2">Learning Preferences</h4>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <span class="bg-secondary/20 text-primary text-xs px-2 py-1 rounded">Frontend Development</span>
+          <span class="bg-secondary/20 text-primary text-xs px-2 py-1 rounded">JavaScript</span>
+          <span class="bg-secondary/20 text-primary text-xs px-2 py-1 rounded">React</span>
+        </div>
+        <button class="text-sm text-secondary hover:text-yellow-600 font-medium">
+          <i class="fas fa-plus mr-1"></i> Add Interests
+        </button>
+      </div>
+      
+      <div class="bg-accent/30 p-4 rounded-lg">
+        <h4 class="font-bold text-primary mb-2">Account Settings</h4>
+        <div class="space-y-3">
+          <button class="w-full text-left text-sm text-gray-700 hover:text-primary flex items-center justify-between">
+            <span>Notification Preferences</span>
+            <i class="fas fa-chevron-right text-xs"></i>
+          </button>
+          <button class="w-full text-left text-sm text-gray-700 hover:text-primary flex items-center justify-between">
+            <span>Privacy Settings</span>
+            <i class="fas fa-chevron-right text-xs"></i>
+          </button>
+          <button class="w-full text-left text-sm text-gray-700 hover:text-primary flex items-center justify-between">
+            <span>Change Password</span>
+            <i class="fas fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content ml-0 md:ml-64 p-4 md:p-8 w-full transition-all duration-300">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-primary">Student Dashboard</h1>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <button id="notification-button" class="relative">
+            <i class="fas fa-bell text-primary text-xl"></i>
+            <span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full"></span>
+          </button>
+        </div>
+        <button id="profile-button" class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-primary font-bold hover:bg-yellow-500 transition-colors">
+          JD
+        </button>
+      </div>
+    </header>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <button class="bg-primary hover:bg-primary/90 text-light px-4 py-3 rounded-lg shadow-md transition-colors flex flex-col items-center w-full">
+        <i class="fas fa-calendar-plus text-secondary text-xl mb-2"></i>
+        <span>Book Appointment</span>
+      </button>
+      <a href="chat.html" class="w-full">
+        <button class="bg-primary hover:bg-primary/90 text-light px-4 py-3 rounded-lg shadow-md transition-colors flex flex-col items-center w-full">
+          <i class="fas fa-comments text-secondary text-xl mb-2"></i>
+          <span>Chat with Mentor</span>
+        </button>
+      </a>
+      <button class="bg-primary hover:bg-primary/90 text-light px-4 py-3 rounded-lg shadow-md transition-colors flex flex-col items-center w-full">
+        <i class="fas fa-road text-secondary text-xl mb-2"></i>
+        <span>AI Roadmaps</span>
+      </button>
+      <button class="bg-primary hover:bg-primary/90 text-light px-4 py-3 rounded-lg shadow-md transition-colors flex flex-col items-center w-full">
+        <i class="fas fa-robot text-secondary text-xl mb-2"></i>
+        <span>AI Interview</span>
+      </button>
+    </div>
+
+    <!-- Hero Carousel -->
+    <div class="relative rounded-xl overflow-hidden mb-8 h-48 bg-gradient-to-r from-primary to-dark">
+      <div class="absolute inset-0 flex items-center justify-center p-6 text-center">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-light mb-2">Upgrade Your Learning Experience</h2>
+          <p class="text-accent mb-4">Join our premium mentorship program for personalized guidance</p>
+          <button class="bg-secondary text-dark font-bold px-6 py-2 rounded-lg hover:bg-yellow-500 transition-colors">
+            Learn More
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learn More Section (Hidden by default) -->
+    <section id="learn-more" class="learn-more-section mb-10 bg-white rounded-xl shadow-md p-6">
+      <h2 class="text-2xl font-bold text-primary mb-6">Getting Started with MentorHub</h2>
+      
+      <div class="space-y-8">
+        <!-- Finding a Mentor -->
+        <div class="border-b pb-6">
+          <h3 class="text-xl font-bold text-primary mb-3 flex items-center">
+            <i class="fas fa-search mr-2 text-secondary"></i> Finding the Perfect Mentor
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">1. Identify Your Goals</h4>
+              <p class="text-sm text-gray-600">Think about what you want to achieve - career advice, skill development, or project guidance.</p>
+            </div>
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">2. Browse Mentors</h4>
+              <p class="text-sm text-gray-600">Use our search filters to find mentors with the right expertise and experience.</p>
+            </div>
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">3. Check Availability</h4>
+              <p class="text-sm text-gray-600">View mentor calendars to find time slots that work for you.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chat Features -->
+        <div class="border-b pb-6">
+          <h3 class="text-xl font-bold text-primary mb-3 flex items-center">
+            <i class="fas fa-comments mr-2 text-secondary"></i> Chat Features
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">Instant Messaging</h4>
+              <p class="text-sm text-gray-600">Send text messages to your mentor anytime for quick questions.</p>
+            </div>
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">File Sharing</h4>
+              <p class="text-sm text-gray-600">Share code snippets, documents, or images directly in chat.</p>
+            </div>
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">Video Calls</h4>
+              <p class="text-sm text-gray-600">Upgrade to video calls for more interactive sessions.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI Interview Prep -->
+        <div class="border-b pb-6">
+          <h3 class="text-xl font-bold text-primary mb-3 flex items-center">
+            <i class="fas fa-robot mr-2 text-secondary"></i> AI Interview Preparation
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">Practice Technical Interviews</h4>
+              <p class="text-sm text-gray-600">Our AI simulates real technical interviews with coding challenges.</p>
+            </div>
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">Behavioral Questions</h4>
+              <p class="text-sm text-gray-600">Practice common behavioral questions with AI feedback.</p>
+            </div>
+          </div>
+          <div class="mt-4 bg-secondary/10 p-4 rounded-lg">
+            <h4 class="font-bold text-primary mb-2">How It Works</h4>
+            <ol class="list-decimal list-inside text-sm text-gray-600 space-y-1">
+              <li>Select your interview type (technical, behavioral, etc.)</li>
+              <li>Choose difficulty level</li>
+              <li>Start the interview - answer questions verbally or in writing</li>
+              <li>Receive instant feedback on your responses</li>
+              <li>Review your performance and areas for improvement</li>
+            </ol>
+          </div>
+        </div>
+        
+        <!-- AI Roadmaps -->
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-3 flex items-center">
+            <i class="fas fa-map-marked-alt mr-2 text-secondary"></i> AI Learning Roadmaps
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">Personalized Learning Paths</h4>
+              <p class="text-sm text-gray-600">Our AI creates customized roadmaps based on your goals and skill level.</p>
+            </div>
+            <div class="bg-accent/30 p-4 rounded-lg">
+              <h4 class="font-bold text-primary mb-2">Progress Tracking</h4>
+              <p class="text-sm text-gray-600">Track your progress through each roadmap with milestones.</p>
+            </div>
+          </div>
+          <div class="mt-4 bg-secondary/10 p-4 rounded-lg">
+            <h4 class="font-bold text-primary mb-2">Getting Started with Roadmaps</h4>
+            <ol class="list-decimal list-inside text-sm text-gray-600 space-y-1">
+              <li>Select your career goal or technology focus</li>
+              <li>Take a quick skills assessment</li>
+              <li>Receive your personalized roadmap</li>
+              <li>Follow the structured learning path</li>
+              <li>Adjust as needed based on your progress</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Mentors -->
+    <section class="mb-10">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-primary">Top Mentors</h2>
+        <a href="#" class="text-sm text-secondary hover:text-yellow-500">View All</a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Mentor Card -->
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Mentor" class="w-20 h-20 rounded-full border-4 border-light">
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="font-bold text-primary">Sarah Johnson</h3>
+            <p class="text-sm text-gray-600 mb-3">Frontend Developer</p>
+            <div class="flex justify-center space-x-2">
+              <a href="chat.html">
+                <button class="bg-primary text-light px-3 py-1 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+                <i class="fas fa-comment-dots mr-1"></i> Chat
+              </button>
+            </a>
+              <button class="bg-secondary text-dark px-3 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                <i class="fas fa-calendar-check mr-1"></i> Book
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Repeat for other mentors -->
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Mentor" class="w-20 h-20 rounded-full border-4 border-light">
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="font-bold text-primary">Michael Chen</h3>
+            <p class="text-sm text-gray-600 mb-3">Backend Engineer</p>
+            <div class="flex justify-center space-x-2">
+              <a href="chat.html">
+              <button class="bg-primary text-light px-3 py-1 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+                <i class="fas fa-comment-dots mr-1"></i> Chat
+              </button>
+          </a>
+          <a href="booking.html">
+              <button class="bg-secondary text-dark px-3 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                <i class="fas fa-calendar-check mr-1"></i> Book
+              </button>
+            </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Mentor" class="w-20 h-20 rounded-full border-4 border-light">
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="font-bold text-primary">Priya Patel</h3>
+            <p class="text-sm text-gray-600 mb-3">UX Designer</p>
+            <div class="flex justify-center space-x-2">
+              <a href="chat.html">
+              <button class="bg-primary text-light px-3 py-1 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+                <i class="fas fa-comment-dots mr-1"></i> Chat
+              </button>
+          </a>
+              <button class="bg-secondary text-dark px-3 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                <i class="fas fa-calendar-check mr-1"></i> Book
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Mentor" class="w-20 h-20 rounded-full border-4 border-light">
+          </div>
+          <div class="p-4 text-center">
+            <h3 class="font-bold text-primary">David Wilson</h3>
+            <p class="text-sm text-gray-600 mb-3">DevOps Specialist</p>
+            <div class="flex justify-center space-x-2">
+              <a href="chat.html">
+              <button class="bg-primary text-light px-3 py-1 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+                <i class="fas fa-comment-dots mr-1"></i> Chat
+              </button>
+          </a>
+              <button class="bg-secondary text-dark px-3 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                <i class="fas fa-calendar-check mr-1"></i> Book
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upcoming Sessions -->
+    <section id="sessions" class="mb-10">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-primary">Upcoming Sessions</h2>
+        <a href="#" class="text-sm text-secondary hover:text-yellow-500">View All</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Session Card -->
+        <div class="bg-light rounded-xl shadow-md p-6 flex items-start space-x-4">
+          <div class="w-14 h-14 bg-secondary rounded-full flex items-center justify-center text-primary font-bold">
+            SJ
+          </div>
+          <div>
+            <h3 class="font-bold text-primary">Sarah Johnson</h3>
+            <p class="text-sm text-gray-600 mb-2">Frontend Development</p>
+            <p class="text-sm text-gray-600 mb-3">
+              <i class="fas fa-calendar-alt text-secondary mr-1"></i> Today, 3:00 PM - 4:00 PM
+            </p>
+            <button class="bg-primary text-light w-full py-2 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+              Join Session
+            </button>
+          </div>
+        </div>
+        
+        <!-- Repeat for other sessions -->
+        <div class="bg-light rounded-xl shadow-md p-6 flex items-start space-x-4">
+          <div class="w-14 h-14 bg-secondary rounded-full flex items-center justify-center text-primary font-bold">
+            MC
+          </div>
+          <div>
+            <h3 class="font-bold text-primary">Michael Chen</h3>
+            <p class="text-sm text-gray-600 mb-2">Backend Architecture</p>
+            <p class="text-sm text-gray-600 mb-3">
+              <i class="fas fa-calendar-alt text-secondary mr-1"></i> Tomorrow, 10:00 AM - 11:00 AM
+            </p>
+            <button class="bg-primary text-light w-full py-2 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+              View Details
+            </button>
+          </div>
+        </div>
+        
+        <div class="bg-light rounded-xl shadow-md p-6 flex items-start space-x-4">
+          <div class="w-14 h-14 bg-secondary rounded-full flex items-center justify-center text-primary font-bold">
+            PP
+          </div>
+          <div>
+            <h3 class="font-bold text-primary">Priya Patel</h3>
+            <p class="text-sm text-gray-600 mb-2">UX Design Principles</p>
+            <p class="text-sm text-gray-600 mb-3">
+              <i class="fas fa-calendar-alt text-secondary mr-1"></i> Friday, 2:00 PM - 3:00 PM
+            </p>
+            <button class="bg-primary text-light w-full py-2 rounded-lg text-sm hover:bg-primary/90 transition-colors">
+              View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upcoming Webinars -->
+    <section id="webinars" class="mb-10">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-primary">Upcoming Webinars</h2>
+        <a href="#" class="text-sm text-secondary hover:text-yellow-500">View All</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Webinar Card -->
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+            <i class="fas fa-laptop-code text-light text-5xl"></i>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-primary mb-2">Advanced React Patterns</h3>
+            <p class="text-sm text-gray-600 mb-3">
+              <i class="fas fa-calendar-alt text-secondary mr-1"></i> June 15, 2023 | 6:00 PM
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-secondary font-medium">Free</span>
+              <button class="bg-secondary text-dark px-4 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                Enroll Now
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Repeat for other webinars -->
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+            <i class="fas fa-server text-light text-5xl"></i>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-primary mb-2">Cloud Architecture</h3>
+            <p class="text-sm text-gray-600 mb-3">
+              <i class="fas fa-calendar-alt text-secondary mr-1"></i> June 18, 2023 | 4:00 PM
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-secondary font-medium">Premium</span>
+              <button class="bg-secondary text-dark px-4 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                Enroll Now
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-light rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-1">
+          <div class="h-40 bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+            <i class="fas fa-paint-brush text-light text-5xl"></i>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-primary mb-2">UI/UX Best Practices</h3>
+            <p class="text-sm text-gray-600 mb-3">
+              <i class="fas fa-calendar-alt text-secondary mr-1"></i> June 22, 2023 | 5:30 PM
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-secondary font-medium">Free</span>
+              <button class="bg-secondary text-dark px-4 py-1 rounded-lg text-sm hover:bg-yellow-500 transition-colors">
+                Enroll Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Mobile menu toggle
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const sidebar = document.querySelector('.sidebar');
+    
+    mobileMenuButton.addEventListener('click', () => {
+      sidebar.classList.toggle('sidebar-open');
+    });
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && 
+          !sidebar.contains(e.target) && 
+          e.target !== mobileMenuButton) {
+        sidebar.classList.remove('sidebar-open');
+      }
+    });
+    
+    // Notification panel toggle
+    const notificationButton = document.getElementById('notification-button');
+    const notificationPanel = document.querySelector('.notification-panel');
+    const closeNotifications = document.getElementById('close-notifications');
+    
+    notificationButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notificationPanel.classList.toggle('notification-panel-open');
+      profilePanel.classList.remove('profile-panel-open');
+    });
+    
+    closeNotifications.addEventListener('click', () => {
+      notificationPanel.classList.remove('notification-panel-open');
+    });
+    
+    // Profile panel toggle
+    const profileButton = document.getElementById('profile-button');
+    const profilePanel = document.querySelector('.profile-panel');
+    const closeProfile = document.getElementById('close-profile');
+    
+    profileButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profilePanel.classList.toggle('profile-panel-open');
+      notificationPanel.classList.remove('notification-panel-open');
+    });
+    
+    closeProfile.addEventListener('click', () => {
+      profilePanel.classList.remove('profile-panel-open');
+    });
+    
+    // Close panels when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!notificationPanel.contains(e.target) && e.target !== notificationButton) {
+        notificationPanel.classList.remove('notification-panel-open');
+      }
+      if (!profilePanel.contains(e.target) && e.target !== profileButton) {
+        profilePanel.classList.remove('profile-panel-open');
+      }
+    });
+    
+    // Learn More section toggle - updated to only work with the Learn More button
+    const learnMoreSection = document.getElementById('learn-more');
+    const learnMoreButton = document.querySelector('a[href="#learn-more"]');
+    
+    learnMoreButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Toggle the visibility of the Learn More section
+      learnMoreSection.classList.toggle('learn-more-section-active');
+      
+      // Hide all other main sections when Learn More is active
+      const mainSections = document.querySelectorAll('main > section:not(#learn-more)');
+      if (learnMoreSection.classList.contains('learn-more-section-active')) {
+        mainSections.forEach(section => {
+          section.style.display = 'none';
+        });
+      } else {
+        mainSections.forEach(section => {
+          section.style.display = 'block';
+        });
+      }
+      
+      // Scroll to the section
+      learnMoreSection.scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Collapse sidebar on larger screens if needed
+    const toggleSidebar = document.querySelector('.toggle-sidebar');
+    if (toggleSidebar) {
+      toggleSidebar.addEventListener('click', () => {
+        document.querySelector('aside').classList.toggle('sidebar-collapsed');
+        document.querySelector('main').classList.toggle('ml-64');
+        document.querySelector('main').classList.toggle('ml-20');
+      });
+    }
+  </script>
+</body>
+</html>
